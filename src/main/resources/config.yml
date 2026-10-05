@@ -1,0 +1,171 @@
+settings:
+  # EssentialsX mode: only /tpa with no arguments opens the menu; /tpa <player> stays EssentialsX's command.
+  # Standalone mode: disabling this lets other plugins handle bare /tpa instead of opening this menu.
+  intercept-bare-tpa: true
+  # Check permission nodes normally. Set false to let everyone use TPAUI features.
+  # EssentialsX still enforces its own commands when installed.
+  check-permissions: true
+  menu-permission: "tpaui.menu"
+  # Bedrock players can use Geyser forms and a native switch for incoming request pop-ups.
+  use-geyser-forms: true
+  # Send anonymous usage metrics to bStats. Set false to disable TPAUI's metrics.
+  bstats-enabled: true
+  # Play request and selector sounds. Individual sounds are configured below.
+  sounds-enabled: true
+
+  # Java inventory layout. Size must be between 18 and 54 and is rounded down to a multiple of 9.
+  # The bottom row is reserved for navigation; player count per page is clamped to available slots.
+  inventory-title: "&8Teleport Menu"
+  inventory-size: 54
+  inventory-players-per-page: 45
+  geyser-players-per-page: 15
+
+  # Menu icon materials. Use Bukkit Material names; legacy material/data are used on older servers.
+  player-item-material: "PLAYER_HEAD"
+  player-item-data: 0
+  player-item-legacy-material: "SKULL_ITEM"
+  player-item-legacy-data: 3
+  filler-material: "GRAY_STAINED_GLASS_PANE"
+  filler-legacy-material: "STAINED_GLASS_PANE"
+  filler-data: 7
+  previous-item-material: "ARROW"
+  previous-item-legacy-material: "ARROW"
+  previous-item-data: 0
+  close-item-material: "BARRIER"
+  close-item-legacy-material: "REDSTONE"
+  close-item-data: 0
+  next-item-material: "ARROW"
+  next-item-legacy-material: "ARROW"
+  next-item-data: 0
+
+  # Send the extra clickable action line after EssentialsX creates its request.
+  request-button-delay-ticks: 1
+  # Standalone request lifetime, cooldown and outgoing-request limit.
+  fallback-request-expiration-seconds: 60
+  fallback-request-cooldown-seconds: 3
+  # Set to 0 for no limit.
+  fallback-max-pending-outgoing: 5
+
+permissions:
+  # These nodes are consulted only when EssentialsX is installed.
+  essentials:
+    tpa: "essentials.tpa"
+    tpahere: "essentials.tpahere"
+    accept: "essentials.tpaccept"
+    deny: "essentials.tpdeny"
+    cancel: "essentials.tpacancel"
+  # These nodes are consulted only when EssentialsX is absent.
+  standalone:
+    tpa: "tpaui.tpa"
+    tpahere: "tpaui.tpahere"
+    accept: "tpaui.accept"
+    deny: "tpaui.deny"
+    cancel: "tpaui.cancel"
+
+sounds:
+  # Volume is clamped to 0–1; pitch is clamped to 0.5–2.
+  volume: 0.8
+  pitch: 1.0
+  menu-open: "BLOCK_CHEST_OPEN"
+  request-sent: "UI_BUTTON_CLICK"
+  request-received: "BLOCK_NOTE_BLOCK_PLING"
+  request-accepted: "ENTITY_PLAYER_LEVELUP"
+  request-denied: "BLOCK_NOTE_BLOCK_BASS"
+  request-cancelled: "BLOCK_NOTE_BLOCK_PLING"
+  request-expired: "BLOCK_NOTE_BLOCK_BASS"
+
+messages:
+  prefix: "&8[&bTPA&8] "
+  no-permission: "&cYou do not have permission to use that request type."
+  player-only: "&cOnly players can use this command."
+  no-online-players: "&cThere are no other online players to select."
+  target-offline: "&cThat player is no longer online. Please choose again."
+  usage-tpa: "&cUsage: /tpa <player>"
+  usage-tpahere: "&cUsage: /tpahere <player>"
+  usage-tpaccept: "&cUsage: /tpaccept [player]"
+  usage-tpdeny: "&cUsage: /tpdeny [player]"
+  usage-tpacancel: "&cUsage: /tpacancel [player]"
+  target-cannot-accept: "&c%player% cannot accept teleport requests."
+  request-already-pending: "&cYou already have a pending request to %player%."
+  too-many-pending-requests: "&cYou already have the maximum of %count% pending requests."
+  request-cooldown: "&cPlease wait %seconds% seconds before sending another request."
+  no-pending-request: "&cThere is no matching pending teleport request."
+  no-outgoing-request: "&cYou have no pending teleport requests to cancel."
+  requester-offline: "&cThat requester is no longer online."
+  teleport-failed: "&cThe teleport could not be completed."
+  request-accepted-target: "&aYou accepted %player%'s teleport request."
+  request-accepted-sender: "&a%player% accepted your teleport request."
+  request-denied-target: "&7You denied %player%'s teleport request."
+  request-denied-sender: "&c%player% denied your teleport request."
+  request-cancelled-target: "&7%player% cancelled their teleport request."
+  request-cancelled-sender: "&aCancelled your request to %player%."
+  requests-cancelled-sender: "&aCancelled %count% pending teleport requests."
+  request-cancelled-offline-target: "&7%player%'s request was removed because they left."
+  request-target-offline-sender: "&c%player% left; your teleport request was removed."
+  request-expired-sender: "&cYour request to %player% expired."
+  request-expired-target: "&7The request from %player% expired."
+  request-receiver-tpa: "&e%player% &7requested to teleport to you."
+  request-receiver-tpahere: "&e%player% &7asked you to teleport to them."
+  request-sender: "&7Teleport request sent to &e%player%&7."
+  bedrock-accept-fallback: "&7Use &f/tpaccept %player% &7or &f/tpdeny %player%&7."
+  bedrock-cancel-command: "&7To cancel, use &f/tpacancel %player%&7."
+
+  # Chat colors accept Bungee ChatColor names. Labels accept legacy & color codes.
+  chat-accept-label: "&a[Accept]"
+  chat-accept-color: "GREEN"
+  chat-accept-hover: "Accept this request"
+  chat-deny-label: "&c[Deny]"
+  chat-deny-color: "RED"
+  chat-deny-hover: "Deny this request"
+  chat-cancel-label: "&7[Cancel]"
+  chat-cancel-color: "GRAY"
+  chat-cancel-hover: "Cancel this request"
+
+  form-request-tpa: "%player% requested to teleport to you."
+  form-request-tpahere: "%player% asks you to teleport to them."
+  form-title: "Teleport request"
+  form-accept: "Accept"
+  form-deny: "Deny"
+  form-request-popups-toggle: "Show incoming TPA request pop-ups"
+  form-request-popups-settings: "Incoming pop-up settings"
+  form-request-popups-settings-title: "Incoming request pop-ups"
+  form-request-popups-settings-content: "Use the switch to show or hide incoming TPA request forms."
+  form-request-popups-disable: "Disable incoming TPA request pop-ups"
+  form-request-popups-enable: "Enable incoming TPA request pop-ups"
+  form-select-mode-title: "Teleport menu"
+  form-select-mode-content: "Choose TPA or TPAHERE, or adjust incoming request pop-ups."
+  bedrock-request-popups-enabled: "&aIncoming TPA request pop-ups are enabled."
+  bedrock-request-popups-disabled: "&eIncoming TPA request pop-ups are disabled. Future requests will show /tpaccept and /tpdeny instructions."
+  bedrock-popup-settings-unavailable: "&cThe pop-up switch could not be opened. You can change it from the /tpa selector."
+  form-mode-tpa: "Teleport to a player"
+  form-mode-tpahere: "Ask a player to come to you"
+  form-mode-name-tpa: "TPA"
+  form-mode-name-tpahere: "TPAHERE"
+  form-select-player-title: "Choose a player"
+  form-select-player-content: "%mode% - Page %page%"
+  form-back-to-modes: "Back to request type"
+  form-previous-page: "Previous page"
+  form-next-page: "Next page"
+
+  inventory-player-name: "&e%player%"
+  inventory-player-left-lore: "&aLeft-click: send TPA"
+  inventory-player-right-lore: "&bRight-click: send TPAHERE"
+  inventory-previous: "&ePrevious page"
+  inventory-next: "&eNext page"
+  inventory-close: "&cClose"
+  inventory-inactive: "&7No page in that direction."
+
+  admin-help-title: "&bTPAUI &7- commands"
+  admin-help-reload: "&f/tpaui reload &7- reload the configuration"
+  admin-help-version: "&f/tpaui version &7- show version and check Modrinth"
+  admin-no-permission: "&cYou do not have permission to reload TPAUI."
+  admin-reloaded: "&aTPAUI configuration reloaded."
+  admin-version: "&7TPAUI version &f%version%"
+  update-checking: "&7Checking Modrinth for a stable release..."
+  update-available: "&eTPAUI %version% is available; this server is running %current%."
+  update-current: "&aTPAUI is up to date (%version%)."
+  update-no-release: "&7No stable TPAUI release was found on Modrinth."
+  update-failed: "&cCould not check Modrinth. See the server log for details."
+  update-link-label: "&bOpen the Modrinth project"
+  update-link-hover: "Open the TPAUI Modrinth page"
+  admin-usage: "&cUsage: /tpaui [help|reload|version]"

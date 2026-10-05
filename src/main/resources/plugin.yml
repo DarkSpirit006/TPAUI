@@ -1,0 +1,53 @@
+name: TPAUI
+main: dev.darkspirit69.tpaui.TPAUIPlugin
+version: '${version}'
+author: DarkSpirit006
+website: https://github.com/DarkSpirit006/TPAUI
+description: Customizable TPA menus and request actions with EssentialsX and standalone support.
+load: POSTWORLD
+softdepend:
+  - Essentials
+  - Geyser-Spigot
+  - Geyser-Bukkit
+  - Floodgate
+commands:
+  tpaui:
+    description: Show TPAUI help, reload configuration, or check the version.
+    usage: /tpaui [help|reload|version]
+  tpa:
+    description: Open the selector or send a standalone TPA request.
+    usage: /tpa [player]
+  tpahere:
+    description: Send a standalone TPAHERE request.
+    usage: /tpahere <player>
+  tpaccept:
+    description: Accept a standalone teleport request.
+    usage: /tpaccept [player]
+  tpdeny:
+    description: Deny a standalone teleport request.
+    usage: /tpdeny [player]
+  tpacancel:
+    description: Cancel standalone outgoing teleport requests.
+    usage: /tpacancel [player]
+permissions:
+  tpaui.admin:
+    description: Allows reloading TPAUI configuration.
+    default: op
+  tpaui.menu:
+    description: Allows opening the TPA player selector with /tpa.
+    default: true
+  tpaui.tpa:
+    description: Allows sending TPA requests when EssentialsX is absent.
+    default: true
+  tpaui.tpahere:
+    description: Allows sending TPAHERE requests when EssentialsX is absent.
+    default: true
+  tpaui.accept:
+    description: Allows accepting requests when EssentialsX is absent.
+    default: true
+  tpaui.deny:
+    description: Allows denying requests when EssentialsX is absent.
+    default: true
+  tpaui.cancel:
+    description: Allows cancelling requests when EssentialsX is absent.
+    default: true

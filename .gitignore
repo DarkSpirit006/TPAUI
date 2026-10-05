@@ -1,0 +1,23 @@
+# Gradle build/cache output
+/.gradle/
+/build/
+
+# Java / IDE output
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local-only release/source archives
+/TPAUI-*.jar
+/TPAUI-*-source.zip
