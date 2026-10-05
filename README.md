@@ -1,6 +1,7 @@
 # TPAUI
 
 [![Build](https://img.shields.io/github/actions/workflow/status/DarkSpirit006/TPAUI/build.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Build)](https://github.com/DarkSpirit006/TPAUI/actions/workflows/build.yml)
+[![CodeFactor](https://img.shields.io/codefactor/grade/github/darkspirit006/tpaui?style=for-the-badge&logo=codefactor&logoColor=white&label=Code%20Quality)](https://www.codefactor.io/repository/github/darkspirit006/tpaui)
 [![Release](https://img.shields.io/github/v/release/DarkSpirit006/TPAUI?style=for-the-badge&logo=github&logoColor=white&label=Release)](https://github.com/DarkSpirit006/TPAUI/releases/latest)
 [![Downloads](https://img.shields.io/modrinth/dt/tpaui?style=for-the-badge&logo=modrinth&logoColor=white&label=Downloads)](https://modrinth.com/plugin/tpaui)
 [![Stars](https://img.shields.io/github/stars/DarkSpirit006/TPAUI?style=for-the-badge&logo=github&logoColor=white&label=Stars)](https://github.com/DarkSpirit006/TPAUI/stargazers)

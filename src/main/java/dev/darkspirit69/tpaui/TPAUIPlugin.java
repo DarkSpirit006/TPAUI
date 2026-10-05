@@ -104,30 +104,38 @@ public final class TPAUIPlugin extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String commandName = command.getName().toLowerCase(Locale.ENGLISH);
         if (!"tpaui".equals(commandName)) {
-            if (essentialsAvailable && requestManager.isFallbackCommand(commandName)) {
-                if ("tpa".equals(commandName) && args.length == 0
-                        && getConfig().getBoolean("settings.intercept-bare-tpa", true)
-                        && sender instanceof Player && canOpenSelector((Player) sender)) {
-                    playerSelector.openSelector((Player) sender, 0);
-                    return true;
-                }
-                dispatchEssentialsCommand(sender, commandName, args);
+            return handleFallbackCommand(sender, commandName, args);
+        }
+        return handleAdminCommand(sender, args);
+    }
+
+    private boolean handleFallbackCommand(CommandSender sender, String commandName, String[] args) {
+        if (essentialsAvailable && requestManager.isFallbackCommand(commandName)) {
+            if ("tpa".equals(commandName) && args.length == 0
+                    && getConfig().getBoolean("settings.intercept-bare-tpa", true)
+                    && sender instanceof Player && canOpenSelector((Player) sender)) {
+                playerSelector.openSelector((Player) sender, 0);
                 return true;
             }
-            if (!essentialsAvailable && "tpa".equals(commandName) && args.length == 0
-                    && !getConfig().getBoolean("settings.intercept-bare-tpa", true)) {
-                return false;
-            }
-            if (!essentialsAvailable && requestManager.isFallbackCommand(commandName)) {
-                if (!(sender instanceof Player)) {
-                    sender.sendMessage(message("messages.player-only", "&cOnly players can use this command."));
-                    return true;
-                }
-                requestManager.handleFallbackCommand((Player) sender, commandName, args);
-                return true;
-            }
+            dispatchEssentialsCommand(sender, commandName, args);
+            return true;
+        }
+        if (!essentialsAvailable && "tpa".equals(commandName) && args.length == 0
+                && !getConfig().getBoolean("settings.intercept-bare-tpa", true)) {
             return false;
         }
+        if (!essentialsAvailable && requestManager.isFallbackCommand(commandName)) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(message("messages.player-only", "&cOnly players can use this command."));
+                return true;
+            }
+            requestManager.handleFallbackCommand((Player) sender, commandName, args);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean handleAdminCommand(CommandSender sender, String[] args) {
         if (args.length == 0 || (args.length == 1 && "help".equalsIgnoreCase(args[0]))) {
             sender.sendMessage(message("messages.admin-help-title", "&bTPAUI &7- commands"));
             sender.sendMessage(message("messages.admin-help-reload", "&f/tpaui reload &7- reload the configuration"));
@@ -137,27 +145,35 @@ public final class TPAUIPlugin extends JavaPlugin implements Listener {
             return true;
         }
         if (args.length == 1 && "reload".equalsIgnoreCase(args[0])) {
-            if (!hasTpauiPermission(sender, "tpaui.admin")) {
-                sender.sendMessage(message(
-                        "messages.admin-no-permission",
-                        "&cYou do not have permission to reload TPAUI."));
-                return true;
-            }
-            reloadConfig();
-            configureMetrics();
-            updateService = new UpdateService(this);
-            sender.sendMessage(message("messages.admin-reloaded", "&aTPAUI configuration reloaded."));
-            return true;
+            return handleReloadCommand(sender);
         }
         if (args.length == 1 && "version".equalsIgnoreCase(args[0])) {
-            String currentVersion = getDescription().getVersion();
-            sender.sendMessage(message("messages.admin-version", "&7TPAUI version &f%version%",
-                    "%version%", currentVersion));
-            sender.sendMessage(message("messages.update-checking", "&7Checking Modrinth for a stable release..."));
-            updateService.check(result -> sendUpdateResult(sender, result));
-            return true;
+            return handleVersionCommand(sender);
         }
         sender.sendMessage(message("messages.admin-usage", "&cUsage: /tpaui [help|reload|version]"));
+        return true;
+    }
+
+    private boolean handleReloadCommand(CommandSender sender) {
+        if (!hasTpauiPermission(sender, "tpaui.admin")) {
+            sender.sendMessage(message(
+                    "messages.admin-no-permission",
+                    "&cYou do not have permission to reload TPAUI."));
+            return true;
+        }
+        reloadConfig();
+        configureMetrics();
+        updateService = new UpdateService(this);
+        sender.sendMessage(message("messages.admin-reloaded", "&aTPAUI configuration reloaded."));
+        return true;
+    }
+
+    private boolean handleVersionCommand(CommandSender sender) {
+        String currentVersion = getDescription().getVersion();
+        sender.sendMessage(message("messages.admin-version", "&7TPAUI version &f%version%",
+                "%version%", currentVersion));
+        sender.sendMessage(message("messages.update-checking", "&7Checking Modrinth for a stable release..."));
+        updateService.check(result -> sendUpdateResult(sender, result));
         return true;
     }
 

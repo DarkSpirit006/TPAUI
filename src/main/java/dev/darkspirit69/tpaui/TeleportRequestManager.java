@@ -114,25 +114,33 @@ final class TeleportRequestManager {
         }
 
         List<String> candidates = new ArrayList<String>();
-        if (("tpa".equals(label) && canUseMode(player, RequestMode.TPA))
-                || ("tpahere".equals(label) && canUseMode(player, RequestMode.TPAHERE))) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
-                if (!online.getUniqueId().equals(player.getUniqueId())) {
-                    candidates.add(online.getName());
-                }
-            }
-        } else if ("tpaccept".equals(label) && canAccept(player)) {
-            addIncomingNames(player, candidates);
-        } else if ("tpdeny".equals(label) && canDeny(player)) {
+        if ("tpa".equals(label) && canUseMode(player, RequestMode.TPA)) {
+            addOnlinePlayerNames(player, candidates);
+        } else if ("tpahere".equals(label) && canUseMode(player, RequestMode.TPAHERE)) {
+            addOnlinePlayerNames(player, candidates);
+        } else if (("tpaccept".equals(label) && canAccept(player))
+                || ("tpdeny".equals(label) && canDeny(player))) {
             addIncomingNames(player, candidates);
         } else if ("tpacancel".equals(label) && canCancel(player)) {
-            for (TeleportRequest request : pendingRequests.outgoingFor(player.getUniqueId())) {
-                if (Bukkit.getPlayer(request.targetId) != null) {
-                    candidates.add(request.targetName);
-                }
-            }
+            addOutgoingNames(player, candidates);
         }
         return filterCandidates(candidates, prefix);
+    }
+
+    private void addOnlinePlayerNames(Player player, List<String> candidates) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (!online.getUniqueId().equals(player.getUniqueId())) {
+                candidates.add(online.getName());
+            }
+        }
+    }
+
+    private void addOutgoingNames(Player player, List<String> candidates) {
+        for (TeleportRequest request : pendingRequests.outgoingFor(player.getUniqueId())) {
+            if (Bukkit.getPlayer(request.targetId) != null) {
+                candidates.add(request.targetName);
+            }
+        }
     }
 
     private void addIncomingNames(Player player, List<String> candidates) {
@@ -157,61 +165,85 @@ final class TeleportRequestManager {
 
     void handleFallbackCommand(Player player, String label, String[] args) {
         if ("tpa".equals(label)) {
-            if (args.length == 0) {
-                String menuPermission = plugin.menuPermission();
-                if (menuPermission != null && !menuPermission.isEmpty()
-                        && !plugin.hasTpauiPermission(player, menuPermission)) {
-                    player.sendMessage(plugin.message(
-                            "messages.no-permission",
-                            "&cYou do not have permission to use that request type."));
-                    return;
-                }
-                if (!canUseMode(player, RequestMode.TPA) && !canUseMode(player, RequestMode.TPAHERE)
-                        && !plugin.selector().canOpenBedrockSettings(player)) {
-                    player.sendMessage(plugin.message(
-                            "messages.no-permission",
-                            "&cYou do not have permission to use that request type."));
-                    return;
-                }
-                plugin.selector().openSelector(player, 0);
-            } else if (args.length == 1) {
-                issueRequest(player, RequestMode.TPA, args[0]);
-            } else {
-                player.sendMessage(plugin.message("messages.usage-tpa", "&cUsage: /tpa <player>"));
-            }
+            handleTpaCommand(player, args);
             return;
         }
         if ("tpahere".equals(label)) {
-            if (args.length == 1) {
-                issueRequest(player, RequestMode.TPAHERE, args[0]);
-            } else {
-                player.sendMessage(plugin.message("messages.usage-tpahere", "&cUsage: /tpahere <player>"));
-            }
+            handleTpaHereCommand(player, args);
             return;
         }
         if ("tpaccept".equals(label)) {
-            if (args.length > 1) {
-                player.sendMessage(plugin.message("messages.usage-tpaccept", "&cUsage: /tpaccept [player]"));
-            } else {
-                acceptFallbackRequest(player, args.length == 0 ? null : args[0]);
-            }
+            handleAcceptCommand(player, args);
             return;
         }
         if ("tpdeny".equals(label)) {
-            if (args.length > 1) {
-                player.sendMessage(plugin.message("messages.usage-tpdeny", "&cUsage: /tpdeny [player]"));
-            } else {
-                denyFallbackRequest(player, args.length == 0 ? null : args[0]);
-            }
+            handleDenyCommand(player, args);
             return;
         }
         if ("tpacancel".equals(label)) {
-            if (args.length > 1) {
-                player.sendMessage(plugin.message("messages.usage-tpacancel", "&cUsage: /tpacancel [player]"));
-            } else {
-                cancelFallbackRequests(player, args.length == 0 ? null : args[0]);
-            }
+            handleCancelCommand(player, args);
         }
+    }
+
+    private void handleTpaCommand(Player player, String[] args) {
+        if (args.length == 0) {
+            if (!hasOpenSelectorPermission(player)) {
+                player.sendMessage(plugin.message(
+                        "messages.no-permission",
+                        "&cYou do not have permission to use that request type."));
+                return;
+            }
+            plugin.selector().openSelector(player, 0);
+            return;
+        }
+        if (args.length == 1) {
+            issueRequest(player, RequestMode.TPA, args[0]);
+            return;
+        }
+        player.sendMessage(plugin.message("messages.usage-tpa", "&cUsage: /tpa <player>"));
+    }
+
+    private boolean hasOpenSelectorPermission(Player player) {
+        String menuPermission = plugin.menuPermission();
+        if (menuPermission != null && !menuPermission.isEmpty()
+                && !plugin.hasTpauiPermission(player, menuPermission)) {
+            return false;
+        }
+        return canUseMode(player, RequestMode.TPA)
+                || canUseMode(player, RequestMode.TPAHERE)
+                || plugin.selector().canOpenBedrockSettings(player);
+    }
+
+    private void handleTpaHereCommand(Player player, String[] args) {
+        if (args.length == 1) {
+            issueRequest(player, RequestMode.TPAHERE, args[0]);
+            return;
+        }
+        player.sendMessage(plugin.message("messages.usage-tpahere", "&cUsage: /tpahere <player>"));
+    }
+
+    private void handleAcceptCommand(Player player, String[] args) {
+        if (args.length > 1) {
+            player.sendMessage(plugin.message("messages.usage-tpaccept", "&cUsage: /tpaccept [player]"));
+            return;
+        }
+        acceptFallbackRequest(player, args.length == 0 ? null : args[0]);
+    }
+
+    private void handleDenyCommand(Player player, String[] args) {
+        if (args.length > 1) {
+            player.sendMessage(plugin.message("messages.usage-tpdeny", "&cUsage: /tpdeny [player]"));
+            return;
+        }
+        denyFallbackRequest(player, args.length == 0 ? null : args[0]);
+    }
+
+    private void handleCancelCommand(Player player, String[] args) {
+        if (args.length > 1) {
+            player.sendMessage(plugin.message("messages.usage-tpacancel", "&cUsage: /tpacancel [player]"));
+            return;
+        }
+        cancelFallbackRequests(player, args.length == 0 ? null : args[0]);
     }
 
     private void createFallbackRequest(final Player requester, final Player target, RequestMode mode) {

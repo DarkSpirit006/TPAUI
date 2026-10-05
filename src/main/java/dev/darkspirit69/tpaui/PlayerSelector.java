@@ -46,6 +46,7 @@ final class PlayerSelector implements Listener {
         if (!(event.getWhoClicked() instanceof Player)) {
             return;
         }
+
         int rawSlot = event.getRawSlot();
         if (rawSlot < 0 || rawSlot >= top.getSize()) {
             return;
@@ -60,27 +61,40 @@ final class PlayerSelector implements Listener {
 
         UUID targetId = holder.targetsBySlot.get(Integer.valueOf(rawSlot));
         if (targetId != null) {
-            ClickType click = event.getClick();
-            RequestMode mode;
-            if (click.isRightClick()) {
-                mode = RequestMode.TPAHERE;
-            } else if (click.isLeftClick()) {
-                mode = RequestMode.TPA;
-            } else {
-                return;
-            }
+            handleTargetClick(player, holder, targetId, event.getClick());
+            return;
+        }
+        handleNavigationClick(player, holder, rawSlot);
+    }
 
-            Player target = Bukkit.getPlayer(targetId);
-            if (target == null || !target.isOnline()) {
-                player.sendMessage(plugin.message("messages.target-offline", "&cThat player is no longer online."));
-                openInventoryMenu(player, holder.page);
-                return;
-            }
-            player.closeInventory();
-            plugin.requests().issueRequest(player, mode, target.getName());
+    private void handleTargetClick(Player player, MenuHolder holder, UUID targetId, ClickType click) {
+        RequestMode mode = convertClickTypeToMode(click);
+        if (mode == null) {
             return;
         }
 
+        Player target = Bukkit.getPlayer(targetId);
+        if (target == null || !target.isOnline()) {
+            player.sendMessage(plugin.message("messages.target-offline", "&cThat player is no longer online."));
+            openInventoryMenu(player, holder.page);
+            return;
+        }
+
+        player.closeInventory();
+        plugin.requests().issueRequest(player, mode, target.getName());
+    }
+
+    private RequestMode convertClickTypeToMode(ClickType click) {
+        if (click.isRightClick()) {
+            return RequestMode.TPAHERE;
+        }
+        if (click.isLeftClick()) {
+            return RequestMode.TPA;
+        }
+        return null;
+    }
+
+    private void handleNavigationClick(Player player, MenuHolder holder, int rawSlot) {
         if (rawSlot == holder.previousSlot && holder.page > 0) {
             openInventoryMenu(player, holder.page - 1);
         } else if (rawSlot == holder.closeSlot) {
